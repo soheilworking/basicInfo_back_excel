@@ -1,0 +1,19 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "ORG.BasicInfo.API\\ORG.BasicInfo.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "GraphDataManagment\\GraphDataManagment.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BasicInfo.Tests\\ORG.BasicInfo.Tests.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

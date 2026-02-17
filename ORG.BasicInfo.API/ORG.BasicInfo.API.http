@@ -1,0 +1,6 @@
+@ORG.BasicInfo.API_HostAddress = http://localhost:5245
+
+GET {{ORG.BasicInfo.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

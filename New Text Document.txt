@@ -1,0 +1,9 @@
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+ dotnet ef migrations remove --project ORG.BasicInfo.Data --startup-project ORG.BasicInfo.API
+dotnet ef migrations add FormsSyss --project ORG.BasicInfo.Data --startup-project ORG.BasicInfo.API
+dotnet ef database update --project ORG.BasicInfo.Data --startup-project ORG.BasicInfo.API
+
+ dotnet ef migrations remove --project ORG.ServiceManagment.Data --startup-project ORG.ServiceManagment.API
+dotnet ef migrations add ServiceManagment --project ORG.ServiceManagment.Data --startup-project ORG.ServiceManagment.API
+dotnet ef database update --project ORG.ServiceManagment.Data --startup-project ORG.ServiceManagment.API
