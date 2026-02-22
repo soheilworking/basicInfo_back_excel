@@ -52,11 +52,12 @@ public class ChangeStateFormRequestHandler(
         {
             return Result<ResponseWrite>.NotFound("کاربر یافت نشد و یا حذف گردیده");
         }
-        foreach (var item in resultSCH.UserFund)
-        {
-            if (fundsList.Contains(item.IdUser) == false)
-                return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
-        }
+        if ((ushort)IsRoleOrg > 1)
+            foreach (var item in resultSCH.UserFund)
+            {
+                if (fundsList.Contains(item.IdUser) == false)
+                    return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
+            }
 
         resultSCH.ChangeState();
         _context.Update(resultSCH);

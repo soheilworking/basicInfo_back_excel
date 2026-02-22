@@ -37,9 +37,18 @@ public class GetFormByIdRequestHandler : IRequestHandler<GetFormByIdRequest, Res
         var userId = Guid.Parse(claim.Value);
         var IsRoleOrg = _httpContextAccessor.HttpContext.Items["IsRoleOrg"];
         var IpUser = _httpContextAccessor.HttpContext.Items["IpUser"].ToString();
-
-        if ((bool)IsRoleOrg == true)
-        {       
+        var permissionFunds = _httpContextAccessor.HttpContext.Items["PermissionFunds"];
+        IEnumerable<Guid> fundsList = [];
+        if (permissionFunds != null)
+        {
+            fundsList = (IEnumerable<Guid>)permissionFunds;
+        }
+        if((ushort)IsRoleOrg == 3)
+        {
+            fundsList = [userId];
+        }
+        if ((ushort)IsRoleOrg == 1)
+        {
             var results = await getItems.GetInfoWithId(Guid.Parse(request.Id), _dbContext, cancellationToken);
             if (results == null) return Result<FormInfoResponse>.NotFound("آیتم مورد نظر یافت نشد و یا حذف گردیده است.");
 
@@ -51,7 +60,7 @@ public class GetFormByIdRequestHandler : IRequestHandler<GetFormByIdRequest, Res
                 itemFile.Title,
                 itemFile.UploadDate,
                 itemFile.FileSize)).ToArrayAsync();
- 
+
             var log = new AddLogFormRaw(
                   results.Id,
                   $"دیده شده",
@@ -62,12 +71,14 @@ public class GetFormByIdRequestHandler : IRequestHandler<GetFormByIdRequest, Res
             await log.SaveChange();
             return Result<FormInfoResponse>.Success(results);
         }
-        else if((bool)IsRoleOrg == false){
+       
+        else 
+        {
 
 
-            var results = await getItems.GetInfoWithIdForUser(Guid.Parse(request.Id),userId, _dbContext, cancellationToken);
-            if(results==null) return Result<FormInfoResponse>.NotFound("آیتم مورد نظر یافت نشد و یا حذف گردیده است.");
-             
+            var results = await getItems.GetInfoWithIdForUser(Guid.Parse(request.Id), fundsList, _dbContext, cancellationToken);
+            if (results == null) return Result<FormInfoResponse>.NotFound("آیتم مورد نظر یافت نشد و یا حذف گردیده است.");
+
             results.FilesList = await _dbContext
                 .FilesRawSyss
                 .Where(item => (item.IdFormRaw == Guid.Parse(request.Id)))
@@ -79,8 +90,8 @@ public class GetFormByIdRequestHandler : IRequestHandler<GetFormByIdRequest, Res
             var log = new AddLogFormRaw(
               results.Id,
               $"دیده شده",
-               userId, 
-               Guid.Empty, 
+               userId,
+               Guid.Empty,
                IpUser,
               _dbContext);
 
@@ -89,8 +100,6 @@ public class GetFormByIdRequestHandler : IRequestHandler<GetFormByIdRequest, Res
             return Result<FormInfoResponse>.Success(results);
 
         }
-        
-        
-        return Result<FormInfoResponse>.Unauthorized("دسترسی غیر مجاز");
+      
     }
 }

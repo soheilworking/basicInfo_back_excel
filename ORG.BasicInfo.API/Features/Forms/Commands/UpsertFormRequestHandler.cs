@@ -39,12 +39,13 @@ public class UpsertFormRequestHandler(
         {
             return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
         }
-        foreach (var item in request.IdsFund)
-        {
-            if(fundsList.Contains(Guid.Parse(item))==false)
-                return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
-        }
-        if((ushort)IsRoleOrg==2&&request.IsPublicForm==true)
+        if((ushort)IsRoleOrg!=1)
+            foreach(var item in request.IdsFund)
+            {
+                if(fundsList.Contains(Guid.Parse(item))==false)
+                    return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
+            }
+        if((ushort)IsRoleOrg>1&&request.IsPublicForm==true)
             return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
 
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);

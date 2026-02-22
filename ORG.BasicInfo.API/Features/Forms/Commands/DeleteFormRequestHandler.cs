@@ -36,12 +36,19 @@ public class DeleteFormRequestHandler(
         {
             return Result<ResponseWrite>.Forbidden("دسترسی غیر مجاز");
         }
-
+     
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Result<ResponseWrite>.Invalid(validationResult.AsErrors());
         }
+        var logForm = await _context.FormRawLogSyss
+         .Where(item => item.IdForm == Guid.Parse(request.Id)).ToArrayAsync();
+        if (logForm.Any(item => item.IdUser != userId) == true)
+        {
+            return Result<ResponseWrite>.Conflict("به دلیل انجام عملیات بر رویه فرم حذف نمیشود.");
+        }
+        _context.RemoveRange(logForm);
 
         var resultSCH = await _context.FormRawSyss
         .Include(f => f.UserFund)

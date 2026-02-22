@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using Ardalis.Result;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ORG.BasicInfo.API.Features.Abstractions;
 using ORG.BasicInfo.API.Features.Forms.Queries.TResponse;
@@ -175,10 +176,11 @@ namespace ORG.BasicInfo.API.Features.Forms.Queries
                 .FirstOrDefaultAsync(item => item.Id == id);
     
             var result= Forms.Adapt<FormInfoResponse>();
-            result.IdsFund = Forms.UserFund.Select(item => item.IdUser);
+            result.IdsFund = Forms.UserFund.Select(item => item.IdUser).ToArray();
             return result;
         }
-        public  async Task<FormInfoResponse> GetInfoWithIdForUser(Guid id,Guid idUser, FormsInfoDbContext dbContext, CancellationToken cancellationToken)
+
+        public  async Task<FormInfoResponse> GetInfoWithIdForUser(Guid id,IEnumerable<Guid> idUser, FormsInfoDbContext dbContext, CancellationToken cancellationToken)
         {
             long nowUnixTimeSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -189,13 +191,14 @@ namespace ORG.BasicInfo.API.Features.Forms.Queries
                   (item.ExpireDate == 0 || item.ExpireDate > nowUnixTimeSeconds))
                   .Where(
                   item =>
-                (item.UserFund.Any(itemUser => itemUser.IdUser == idUser) ||
+                (item.UserFund.Any(itemUser =>   idUser.Contains(itemUser.IdUser)) ||
                 item.IsPublicForm == true) && item.Id == id
                 )
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-
-            return Forms.Adapt<FormInfoResponse>();
+            var result = Forms.Adapt<FormInfoResponse>();
+            result.IdsFund = Forms.UserFund.Select(item => item.IdUser).ToArray();
+            return result;
         }
         public override async Task<FormListResponse> GetInfoWithIdCode(ulong idCode, FormsInfoDbContext dbContext, CancellationToken cancellationToken)
         {

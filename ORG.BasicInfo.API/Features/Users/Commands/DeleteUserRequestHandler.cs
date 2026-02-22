@@ -37,7 +37,12 @@ public class DeleteUserRequestHandler(
         {
             return Result<ResponseWrite>.NotFound("کاربر یافت نشد و یا حذف گردیده");
         }
-
+        var logUserFormRaw = await _context.FormRawLogSyss.FirstOrDefaultAsync(item => item.IdUser == Guid.Parse(request.Id));
+        var logUserFormUser = await _context.FormUserLogSyss.FirstOrDefaultAsync(item => item.IdUser == Guid.Parse(request.Id));
+        if(logUserFormRaw!=null|| logUserFormUser != null)
+        {
+            return Result<ResponseWrite>.Conflict("کاربر مورد نظر به دلیل داشتن اطلاعات کاری حذف نگردید");
+        }
         _context.Remove(resultSCH);
 
         var idEnc = await PermissionFund.GetEncryptDataWithThisKey(resultSCH.Id.ToString());
