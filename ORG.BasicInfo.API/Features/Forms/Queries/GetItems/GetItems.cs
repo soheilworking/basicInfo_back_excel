@@ -91,8 +91,14 @@ namespace ORG.BasicInfo.API.Features.Forms.Queries
                   && (formRaw.UserFund.Any(u => idUser.Contains(u.IdUser))
                       || formRaw.IsPublicForm == true)
                 
-               join formUser in dbContext.FormUserSyss
-                    on formRaw.Id equals formUser.IdFormRaw into frmUser
+               join formUser in dbContext.FormUserSyss.Where(u => idUser.Contains(u.IdUser))
+                on formRaw.Id equals formUser.IdFormRaw into frmUser
+             
+                   
+               
+
+
+                    
 
                 from fUser in frmUser.DefaultIfEmpty()
                     where fUser==null

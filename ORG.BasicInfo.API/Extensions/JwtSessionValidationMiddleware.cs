@@ -47,6 +47,7 @@ public class JwtSessionValidationMiddleware
                 // لاگ قبل از ادامه (اختیاری)
                 // logger?.LogDebug("JwtSessionValidationMiddleware: skipping validation for {Path}", context.Request.Path);
                 //if(_next(context).IsCompletedSuccessfully==true)
+                
                 await _next(context).ConfigureAwait(false);
 
                 // هیچ تغییری در response پس از برگشت انجام نده

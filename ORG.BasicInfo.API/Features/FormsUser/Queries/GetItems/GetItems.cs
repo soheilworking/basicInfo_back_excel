@@ -345,6 +345,22 @@ namespace ORG.BasicInfo.API.Features.FormsUser.Queries
 
             var Forms = dbContext.FormUserSyss
                .Where(item => idUser.Contains(item.IdUser))
+               .Join(dbContext.Users,
+                    formUser=> formUser.IdUser,
+                    user=>user.Id,
+                    (formUser, user) => new
+                    {
+                        formUser.Id,
+                        formUser.IdFormRaw,
+                        formUser.IdUser,
+                        formUser.IdUserRead,
+                        formUser.LUserCreate,
+                        formUser.LUserEdit,
+                        formUser.TCreate,
+                        formUser.TEdit,
+                        formUser.StateAction,
+                    }
+               )
             .Join(dbContext.FormRawSyss,
                     formUser => formUser.IdFormRaw,
                     formRaw => formRaw.Id,
@@ -352,6 +368,7 @@ namespace ORG.BasicInfo.API.Features.FormsUser.Queries
                     {
                         Id = formUser.Id,
                         IdCode = formRaw.IdCode,
+                    
                         Title = formRaw.Title,
                         TCreate = formUser.TCreate,
                         TEdit = formUser.TEdit,
